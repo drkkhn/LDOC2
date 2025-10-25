@@ -1,0 +1,10 @@
+curl
+wget
+git
+nginx
+postgresql
+ufw
+rsync
+tar
+python3-pip
+python3-venv
