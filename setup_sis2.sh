@@ -1,5 +1,4 @@
-#!/bin/bash
-# SIS2 Setup Script
+
 sudo groupadd admin auditor automation vaultwarden user
 for u in admin1 auditor1 autobot vw user1; do sudo useradd -m -s /bin/bash $u; done
 sudo usermod -aG admin admin1
