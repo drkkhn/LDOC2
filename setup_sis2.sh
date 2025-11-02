@@ -5,9 +5,13 @@ echo "=== SIS2: Users and Permissions Setup ==="
 
 
 for g in admin auditor automation vaultwarden user; do
-  sudo groupadd -f "$g"
+  if getent group "$g" >/dev/null; then
+    echo "[INFO] Group $g already exists."
+  else
+    sudo groupadd "$g"
+    echo "[OK] Group $g created."
+  fi
 done
-echo "[OK] Groups created or already exist."
 
 
 for u in admin1 auditor1 autobot vw user1; do
@@ -33,25 +37,21 @@ sudo chown -R vw:vaultwarden /var/lib/vaultwarden /var/log/vaultwarden
 sudo chmod 750 /var/lib/vaultwarden /var/log/vaultwarden
 sudo chown -R autobot:automation /var/backups
 sudo chmod 750 /var/backups
-echo "[OK] Directories created and permissions set."
+echo "[OK] Directories and permissions configured."
 
 
 echo 'admin1 ALL=(ALL) ALL' | sudo tee /etc/sudoers.d/99-admin1 >/dev/null
 echo 'autobot ALL=(ALL) NOPASSWD: /usr/bin/rsync, /usr/bin/tar' | sudo tee /etc/sudoers.d/50-autobot >/dev/null
 
-
 if sudo visudo -cf /etc/sudoers.d/99-admin1 && sudo visudo -cf /etc/sudoers.d/50-autobot; then
   echo "[OK] Sudoers validated successfully."
 else
-  echo "[ERROR] Sudoers validation failed!"
+  echo "[WARN] Sudoers validation failed!"
 fi
 
 
 echo "=== Summary ==="
-echo "Groups:"
-getent group | grep -E 'admin|auditor|automation|vaultwarden|user' || echo "No groups found!"
-echo ""
-echo "Users:"
-for u in admin1 auditor1 autobot vw user1; do id "$u"; done
-echo ""
-echo "[DONE] SIS2 setup complete."
+getent group | grep -E 'admin|auditor|automation|vaultwarden|user' || true
+for u in admin1 auditor1 autobot vw user1; do id "$u" || true; done
+
+echo "=== SIS2 setup complete ==="
