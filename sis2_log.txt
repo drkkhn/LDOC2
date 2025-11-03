@@ -1,0 +1,2 @@
+admin1 ALL=(ALL) ALL
+autobot ALL=(ALL) NOPASSWD: /usr/bin/rsync, /usr/bin/tar
