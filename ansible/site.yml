@@ -1,0 +1,5 @@
+- name: Apply common configuration
+  hosts: dev
+  become: yes
+  roles:
+    - common

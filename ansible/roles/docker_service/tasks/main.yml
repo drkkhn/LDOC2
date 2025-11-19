@@ -1,0 +1,30 @@
+- name: Ensure docker is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Create app directory
+  file:
+    path: /opt/password-manager
+    state: directory
+
+- name: Copy Dockerfile
+  copy:
+    src: ../../files/docker/Dockerfile
+    dest: /opt/password-manager/Dockerfile
+
+- name: Copy index.html
+  copy:
+    src: ../../files/docker/index.html
+    dest: /opt/password-manager/index.html
+
+- name: Build image
+  command: docker build -t password-manager:v1 /opt/password-manager
+
+- name: Remove old container
+  command: docker rm -f password-manager
+  ignore_errors: yes
+
+- name: Run container
+  command: docker run -d --name password-manager -p 8080:80 --restart=always password-manager:v1

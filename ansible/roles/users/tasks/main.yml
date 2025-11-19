@@ -1,0 +1,55 @@
+- name: Create groups
+  group:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - admin
+    - auditor
+    - automation
+    - vaultwarden
+    - user
+
+- name: Create users
+  user:
+    name: "{{ item.name }}"
+    shell: /bin/bash
+    groups: "{{ item.groups }}"
+    create_home: yes
+  loop:
+    - { name: admin1, groups: "admin" }
+    - { name: auditor1, groups: "auditor" }
+    - { name: autobot, groups: "automation" }
+    - { name: vw, groups: "vaultwarden" }
+    - { name: user1, groups: "user" }
+
+- name: Create Vaultwarden directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: '0750'
+    owner: vw
+    group: vaultwarden
+  loop:
+    - { path: /var/lib/vaultwarden }
+    - { path: /var/log/vaultwarden }
+
+- name: Create backup directory
+  file:
+    path: /var/backups
+    state: directory
+    owner: autobot
+    group: automation
+    mode: '0750'
+
+- name: Give admin1 sudo rights
+  copy:
+    dest: /etc/sudoers.d/99-admin1
+    mode: '0440'
+    content: "admin1 ALL=(ALL) ALL\n"
+
+- name: Sudo for autobot
+  copy:
+    dest: /etc/sudoers.d/50-autobot
+    mode: '0440'
+    content: "autobot ALL=(ALL) NOPASSWD: /usr/bin/rsync, /usr/bin/tar\n"
+

@@ -1,0 +1,5 @@
+- name: Clone repository
+  git:
+    repo: "https://github.com/drkkhn/LDOC2.git"
+    dest: "/home/{{ lookup('env','USER') }}/LDOC2"
+    update: yes

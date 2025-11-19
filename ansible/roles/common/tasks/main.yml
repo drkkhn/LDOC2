@@ -1,0 +1,21 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install basic packages
+  apt:
+    name:
+      - curl
+      - git
+      - vim
+    state: present
+
+- name: Ensure /var/backups exists
+  file:
+    path: /var/backups
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'

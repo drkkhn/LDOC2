@@ -1,0 +1,29 @@
+- name: Copy backup script
+  copy:
+    src: ../../files/scripts/backup.sh
+    dest: /usr/local/bin/backup.sh
+    mode: '0755'
+
+- name: Copy healthcheck script
+  copy:
+    src: ../../files/scripts/healthcheck.sh
+    dest: /usr/local/bin/healthcheck.sh
+    mode: '0755'
+
+- name: Ensure health log exists
+  file:
+    path: /var/log/service_health.log
+    state: touch
+
+- name: Cron — backup
+  cron:
+    name: "daily backup"
+    job: "/usr/local/bin/backup.sh"
+    minute: "0"
+    hour: "2"
+
+- name: Cron — healthcheck
+  cron:
+    name: "healthcheck"
+    job: "/usr/local/bin/healthcheck.sh >> /var/log/service_health.log 2>&1"
+    minute: "*/5"
